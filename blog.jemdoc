@@ -1,0 +1,7 @@
+# jemdoc: menu{MENU}{blog.html}
+= bolg
+~~~
+This is my bolg list!
+~~~
+== Guide
+- Build Github page based Jemdoc  [https://www.notion.so/Ubuntu-Github-dc04221847994d65834290470e394777]

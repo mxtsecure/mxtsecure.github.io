@@ -1,3 +1,4 @@
+# jemdoc: menu{MENU}{index.html}
 [https://jemnz.com/ Jacob Mattingley] ([www@jemnz.com])
 
 If the first line of the file starts with +\# jemdoc+, special functions like [menu.html menus] will be used.
