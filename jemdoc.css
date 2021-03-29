@@ -1,4 +1,6 @@
-/* Default css file for jemdoc. */
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab|Open+Sans);
+@import url(https://fonts.googleapis.com/earlyaccess/notosanssc.css);
+
 
 table#tlayout {
     border: none;
@@ -6,11 +8,24 @@ table#tlayout {
     background: white;
 }
 
+html {
+	background-color: #DCDCDC;
+}
+
 body {
 	background: white;
-	font-family: Georgia, serif;
-	padding-bottom: 8px;
-	margin: 0;
+	#font-family: 'Droid Sans', sans-serif;
+	font-family: 'Open Sans', 'Noto Sans SC', Verdana, Helvetica, Arial, Segoe UI, sans-serif;
+	text-align:left; /* for IE */
+  	margin-top: 30px; 
+  	margin-bottom: 10px;
+	margin-left: auto;
+  	margin-right: auto;
+  	padding-left:  50px;
+  	padding-right: 50px;
+  	padding-top: 20px;
+  	padding-bottom: 50px;
+  	max-width: 960px;
 }
 
 #layout-menu {
@@ -92,7 +107,7 @@ div.menu-item {
 div#toptitle {
 	padding-bottom: 0.2em;
 	margin-bottom: 1.5em;
-	border-bottom: 3px double gray;
+	/*border-bottom: 3px double gray;*/
 }
 
 /* Reduce space if we begin the page with a title. */
@@ -117,6 +132,7 @@ strong {
 
 
 h1, h2, h3 {
+	font-family: 'Roboto Slab', 'Noto Sans SC', Verdana, Helvetica, Arial, Segoe UI, sans-serif;
 	color: #527bbd;
 	margin-top: 0.7em;
 	margin-bottom: 0.3em;
