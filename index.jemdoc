@@ -1,22 +1,26 @@
-# jemdoc: menu{MENU}{index.html}, nofooter  
-== 淮左青衣的Page
+# jemdoc: nofooter  
+# jemdoc: title{淮左青衣}
+== 淮左青衣
 
 ~~~
-{}{img_left}{photos/bio.jpg}{alt text}{131}{160}{http://people.kth.se/~euhanna/}
-ms
-ShanDong Unversity \n
+{}{img_left}{photos/touxiang.jpg}{alt text}{131}{160}
+研究生在读 \n
+山东大学 \n
 Phone: \+86 178 6428 5429 \n
-E-mail: /202037051@mail.sdu.edu.cn/
+E-mail: /202037051@mail.sdu.edu.cn/ \n
+Github: [https://github.com/mxtsecure]
 ~~~
 
-== About me
+== 教育经历
 自我介绍【后续补充】
 
-== Research
+== 研究方向
 My research interests include 
-- Adversarial Attack in Speech 
-- Android Pwn
+- 语音对抗 
 - Smart Contract secure
 - Iot Secure
+
+== 友情链接
+[blog.html 个人博客]
 
 

@@ -1,9 +1,13 @@
-# jemdoc: menu{MENU}{blog.html}
-= bolg
+# jemdoc: nofooter
+# jemdoc: title{淮左青衣-blog}
+= 博客
 
 ~~~
 This is my bolg list!
 ~~~
 
-== Guide
+== 教程类
 - [https://www.notion.so/Ubuntu-Github-dc04221847994d65834290470e394777 Build Github page based Jemdoc]
+
+= 友情链接
+[index.html 个人主页]
