@@ -1,0 +1,7 @@
+# jemdoc: nofooter
+== 测试
+
+~~~
+{}{img_left}{photos/chuanchuan.jpg}{alt text}{198}{230}
+
+~~~
