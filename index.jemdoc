@@ -1,14 +1,14 @@
 # jemdoc: nofooter  
-# jemdoc: title{淮左青衣}
-== 淮左青衣
+# jemdoc: title{Mengxiangtao}
+== Mengxiangtao
 
 ~~~
-{}{img_left}{photos/kebo.jpg}{alt text}{198}{260}
-== 淮左青衣
-研究生在读, [https://www.sdu.edu.cn/ 山东大学] \n \n
+{}{img_left}{photos/mengxiangtao.jpg}{alt text}{198}{260}
+== Mengxiangtao
+博士在读, [https://www.sdu.edu.cn/ 山东大学] \n \n
 [https://cst.qd.sdu.edu.cn/ 网络空间安全学院]，网络与系统安全方向 \n\n 
 Phone: \+86 178 6428 5429 \n \n
-E-mail: /202037051@mail.sdu.edu.cn/ \n \n
+E-mail: /mengxiangtao@mail.sdu.edu.cn/ \n \n
 Github: [https://github.com/mxtsecure mxtsecure]
 ~~~
 
@@ -17,7 +17,8 @@ Github: [https://github.com/mxtsecure mxtsecure]
 ~~~
 
 == 教育经历
-- 2020-9——至今: 硕士，山东大学，网络空间安全学院，网络与系统安全方向，师从[https://faculty.sdu.edu.cn/guoshanqing/zh_CN/index.htm 郭山清教授]，中国青岛
+- 2023-9——至今: 博士，山东大学，网络空间安全学院，网络与系统安全方向，师从[https://infosec.sdu.edu.cn/info/1003/1068.htm 王小云院士]，中国青岛
+- 2020-9——2023-7: 硕士，山东大学，网络空间安全学院，网络与系统安全方向，师从[https://faculty.sdu.edu.cn/guoshanqing/zh_CN/index.htm 郭山清教授]，中国青岛
 - 2016-9——2020-7: 工学学士，山东科技大学，网络工程专业，中国青岛
 
 == 研究方向
@@ -39,7 +40,6 @@ My research interests include
 == 友情链接
 - [blog.html 个人博客]
 - [article.html 随笔印记]
-- [http://152.136.103.120/ Typecho博客]
 
 
 
