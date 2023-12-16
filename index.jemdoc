@@ -8,7 +8,7 @@
 1th-year Ph.D, [https://sduiseclab.github.io/ ISecLab] \n \n
 School of Cyber Science and Technology, Shandong University \n\n 
 E-mail: /mengxiangtao AT mail.sdu.edu.cn/ \n \n
-\[[https://github.com/mxtsecure Github]\] \[[https://www.notion.so/ISecLab-AISec-dashboard-6fdee21c80c54cd489c783b4f469067e?pvs=4 ISecLab-DeepFake]\]
+\[[https://github.com/mxtsecure Github]\] 
 ~~~
 
 ~~~
@@ -26,7 +26,7 @@ E-mail: /mengxiangtao AT mail.sdu.edu.cn/ \n \n
 My research centers on Trustworthy Machine Learning (expercially DeepFake), including disclosing the safety, security and privacy of the Machine Learning (such as, Text-to-Image, ChatGPT, etc.) and proposing corresponding defense measures.
 
 == Publication
-. *Xiangtao Meng*, Li Wang, Shanqing Guo, Lei Ju, and Qingchuan Zhao. AVA: Inconspicuous Attribute Variation-based Adversarial Attack. IEEE S&P 2024. \[TOP\] \[*CCF A*\]
+. *Xiangtao Meng*, Li Wang, Shanqing Guo, Lei Ju, and Qingchuan Zhao. AVA: Inconspicuous Attribute Variation-based Adversarial Attack. IEEE S&P 2024. \[TOP\] \[*CCF A*\] \[[https://arxiv.org/abs/2312.08675 PDF]\] \[[https://github.com/AnonymousUserA/AVA Code]\]
 . Li Wang, *Xiangtao Meng*, Dan Li, Xuhong Zhang, Shouling Ji, Shanqing Guo. DEEPFAKER: A Unified Evaluation Platform for Facial Deepfake and Detection Models. ACM Transactions on Privacy and Security(TOPS) 2024. \[*CCF B*\]
 
 == Awards
