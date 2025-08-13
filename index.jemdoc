@@ -13,7 +13,8 @@ E-mail: /mengxiangtao AT mail.sdu.edu.cn/ \n \n
 
 ~~~
 *News:*
-- 2025-3-11: One paper titled "Fuzz-Testing Meets LLM-Based Agents: An Automated and Efficient Framework for Jailbreaking Text-To-Image Generation Models" got accepted in IEEE S&P 2025!
+- 2025-8-13: One paper titled "DCMI: A Differential Calibration Membership Inference Attack Against Retrieval-Augmented Generation" got accepted in CCS 2025! Congratulations to Xinyu!!! First time as a corresponding author.
+- 2025-3-11: One paper titled "Fuzz-Testing Meets LLM-Based Agents: An Automated and Efficient Framework for Jailbreaking Text-To-Image Generation Models" got accepted in IEEE S&P 2025! Congratulations to Yingkai!!!
 - 2024-11-15: My master's thesis, titled "Robustness Research on Deepfake Detection Technology," has been recognized as an outstanding master's thesis at Shandong University.
 - 2023-11-12: One paper titled “AVA: Inconspicuous Attribute Variation-based Adversarial Attack bypassing DeepFake Detection” got accepted in IEEE S&P 2024!
 - 2023-10-13: One paper titled “DEEPFAKER: A Unified Evaluation Platform for Facial Deepfake and Detection Models” got accepted in TOPS(ACM Transactions on Privacy and Security) 2024!
@@ -28,10 +29,12 @@ E-mail: /mengxiangtao AT mail.sdu.edu.cn/ \n \n
 My research centers on Trustworthy Machine Learning (expercially DeepFake), including disclosing the safety, security and privacy of the Machine Learning (such as, Text-to-Image, ChatGPT, etc.) and proposing corresponding defense measures.
 
 == Publication
-. Yingkai Dong, *Xiangtao Meng*, Ning Yu, Zheng Li, Shanqing Guo. Fuzz-testing meets llm-based agents: An automated and efficient framework for jailbreaking text-to-image generation models. IEEE S&P 2025. \[TOP\] \[*CCF A*\] arxiv. \[[https://arxiv.org/abs/2408.00523 PDF]\]
-. *Xiangtao Meng*, Li Wang, Shanqing Guo, Lei Ju, and Qingchuan Zhao. AVA: Inconspicuous Attribute Variation-based Adversarial Attack bypassing DeepFake Detection. IEEE S&P 2024. \[TOP\] \[*CCF A*\] \[[https://arxiv.org/abs/2312.08675 PDF]\] \[[https://github.com/AnonymousUserA/AVA Code]\]
-. Li Wang, *Xiangtao Meng*, Dan Li, Xuhong Zhang, Shouling Ji, Shanqing Guo. DEEPFAKER: A Unified Evaluation Platform for Facial Deepfake and Detection Models. ACM Transactions on Privacy and Security(TOPS) 2024. \[*CCF B*\] \[[https://dl.acm.org/doi/abs/10.1145/3634914 PDF]\]
+. Xinyu, *Xiangtao Meng*✉, Yingkai Dong, Zheng Li✉, Shanqing Guo✉. DCMI: A Differential Calibration Membership Inference Attack Against Retrieval-Augmented Generation. CCS 2025. [TOP] [*CCF A*]
+. Yingkai Dong, *Xiangtao Meng*, Ning Yu, Zheng Li✉, Shanqing Guo✉. Fuzz-testing meets llm-based agents: An automated and efficient framework for jailbreaking text-to-image generation models. IEEE S&P 2025. [TOP] [*CCF A*] arxiv. [[https://arxiv.org/abs/2408.00523 PDF]]
+. *Xiangtao Meng*, Li Wang, Shanqing Guo✉, Lei Ju, Qingchuan Zhao. AVA: Inconspicuous Attribute Variation-based Adversarial Attack bypassing DeepFake Detection. IEEE S&P 2024. [TOP] [*CCF A*] [[https://arxiv.org/abs/2312.08675 PDF]] [[https://github.com/AnonymousUserA/AVA Code]]
+. Li Wang, *Xiangtao Meng*, Dan Li, Xuhong Zhang, Shouling Ji, Shanqing Guo✉. DEEPFAKER: A Unified Evaluation Platform for Facial Deepfake and Detection Models. ACM Transactions on Privacy and Security (TOPS) 2024. [*CCF B*] [[https://dl.acm.org/doi/abs/10.1145/3634914 PDF]]
 
+✉ Corresponding author.
 
 
 
