@@ -13,6 +13,7 @@ E-mail: /mengxiangtao AT mail.sdu.edu.cn/ \n \n
 
 ~~~
 *News:*
+- 2025-9-18: One paper titled "ErrorTrace: A Black-Box Traceability Mechanism Based on Model Family Error Space" got accepted in **NeurIPS 2025 (spotlight)**! Congratulations to Chuanchao!!!
 - 2025-9-6: Funded by Topsec (Tianrongxin), I started the joint research project *“Design of Security Testing Framework and Risk Assessment for Large Language Models”*.
 - 2025-8-28: Preprint published: *“Safe-Control: A Safety Patch for Mitigating Unsafe Content in Text-to-Image Generation Models”*
 - 2025-8-13: One paper titled "DCMI: A Differential Calibration Membership Inference Attack Against Retrieval-Augmented Generation" got accepted in CCS 2025! Congratulations to Xinyu!!! First time as a corresponding author.
@@ -31,6 +32,7 @@ E-mail: /mengxiangtao AT mail.sdu.edu.cn/ \n \n
 My research centers on Trustworthy Machine Learning (expercially DeepFake), including disclosing the safety, security and privacy of the Machine Learning (such as, Text-to-Image, ChatGPT, etc.) and proposing corresponding defense measures.
 
 == Publication
+. Chuanchao Zang, **Xiangtao Meng**, Wenyu Chen, Tianshuo Cong, Zha Yaxing, Dong Qi, Zheng Li, Shanqing Guo. ErrorTrace: A Black-Box Traceability Mechanism Based on Model Family Error Space. NeurIPS 2025 (spotlight). [TOP] [*CCF A*]
 . *Xiangtao Meng*, Yingkai Dong, Ning Yu, Li Wang, Zheng Li, Shanqing Guo. Safe-Control: A Safety Patch for Mitigating Unsafe Content in Text-to-Image Generation Models. arXiv 2025. [[https://arxiv.org/abs/2508.21099 PDF]]
 . Xinyu, *Xiangtao Meng*✉, Yingkai Dong, Zheng Li✉, Shanqing Guo✉. DCMI: A Differential Calibration Membership Inference Attack Against Retrieval-Augmented Generation. CCS 2025. [TOP] [*CCF A*]
 . Yingkai Dong, *Xiangtao Meng*, Ning Yu, Zheng Li✉, Shanqing Guo✉. Fuzz-testing meets llm-based agents: An automated and efficient framework for jailbreaking text-to-image generation models. IEEE S&P 2025. [TOP] [*CCF A*] arxiv. [[https://arxiv.org/abs/2408.00523 PDF]]
