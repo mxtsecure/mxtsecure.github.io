@@ -39,6 +39,9 @@ def load_data() -> Dict[str, Any]:
 
 
 def ensure_links_and_images(data: Dict[str, Any]) -> Dict[str, Any]:
+    assets = data.get("assets", {})
+    placeholder_image = assets.get("placeholder_image", PLACEHOLDER_IMAGE)
+
     for item in data.get("timeline", []):
         if not item.get("link"):
             item["link"] = PLACEHOLDER_LINK
@@ -53,21 +56,19 @@ def ensure_links_and_images(data: Dict[str, Any]) -> Dict[str, Any]:
         image_path = project.get("image")
         if not image_path:
             print(f"[warn] Project '{project.get('name')}' missing image, applying placeholder.")
-            project["image"] = PLACEHOLDER_IMAGE
-        else:
-            if not asset_exists(image_path):
-                print(f"[warn] Project '{project.get('name')}' image not found at {image_path}, applying placeholder.")
-                project["image"] = PLACEHOLDER_IMAGE
+            project["image"] = placeholder_image
+        elif not asset_exists(image_path):
+            print(f"[warn] Project '{project.get('name')}' image not found at {image_path}, applying placeholder.")
+            project["image"] = placeholder_image
 
     profile = data.get("profile", {})
-    avatar_path = profile.get("avatar")
+    avatar_path = profile.get("avatar") or assets.get("avatar")
     if not avatar_path:
         print("[warn] Profile avatar missing, applying placeholder.")
-        profile["avatar"] = PLACEHOLDER_IMAGE
-    else:
-        if not asset_exists(avatar_path):
-            print(f"[warn] Profile avatar not found at {avatar_path}, applying placeholder.")
-            profile["avatar"] = PLACEHOLDER_IMAGE
+        profile["avatar"] = placeholder_image
+    elif not asset_exists(avatar_path):
+        print(f"[warn] Profile avatar not found at {avatar_path}, applying placeholder.")
+        profile["avatar"] = placeholder_image
 
     return data
 
@@ -89,10 +90,20 @@ def copy_assets() -> None:
         photos_out.mkdir(parents=True, exist_ok=True)
 
 
-def render_nav(navigation: List[Dict[str, Any]]) -> str:
+def is_enabled(toggle_key: str | None, toggles: Dict[str, Any], fallback: bool = True) -> bool:
+    if toggle_key is None:
+        return fallback
+    return bool(toggles.get(toggle_key, fallback))
+
+
+def render_nav(navigation: List[Dict[str, Any]], toggles: Dict[str, Any]) -> str:
     links = []
     for item in navigation:
-        links.append(f"<a href=\"{item['target']}\">{item['label']}</a>")
+        if not is_enabled(item.get("toggle"), toggles, item.get("enabled", True)):
+            continue
+        target = item.get("target", "#")
+        extra_attrs = " target=\"_blank\" rel=\"noopener\"" if item.get("external") else ""
+        links.append(f"<a class=\"nav-link\" href=\"{target}\"{extra_attrs}>{item['label']}</a>")
     return "".join(links)
 
 
@@ -105,14 +116,20 @@ def render_highlights(highlights: List[Dict[str, Any]]) -> str:
     return "".join(cards)
 
 
-def render_profile_section(profile: Dict[str, Any], highlights: List[Dict[str, Any]]) -> str:
+def render_profile_section(profile: Dict[str, Any], highlights: List[Dict[str, Any]], toggles: Dict[str, Any]) -> str:
     highlight_html = render_highlights(highlights)
     social_html = "".join(
         f"<a class=\"chip\" href=\"{social['url']}\" target=\"_blank\" rel=\"noopener\">{social['label']}</a>"
         for social in profile.get("socials", [])
     )
+    actions_html = "".join(
+        f"<a class=\"btn {action.get('variant', 'btn-ghost')}\" href=\"{action['url']}\""
+        f" target=\"_blank\" rel=\"noopener\">{action['label']}</a>"
+        for action in profile.get("actions", [])
+        if is_enabled(action.get("toggle"), toggles, action.get("enabled", True))
+    )
     return f"""
-<section class=\"hero\" id=\"about\">\n  <div class=\"profile-card\">\n    <div class=\"avatar\">\n      <img src=\"{profile['avatar']}\" alt=\"Portrait of {profile['name']}\" loading=\"lazy\" />\n    </div>\n    <div class=\"profile-text\">\n      <p class=\"eyebrow\">{profile.get('native_name','')}</p>\n      <h1>{profile['name']}</h1>\n      <p class=\"role\">{profile['role']} · {profile['organization']}</p>\n      <p class=\"muted\">{profile['location']}</p>\n      <p class=\"lede\">{profile['tagline']}</p>\n      <div class=\"chips\">\n        <span class=\"chip\">Email · {profile['email']}</span>\n        {social_html}\n      </div>\n    </div>\n  </div>\n  <div class=\"highlights\">{highlight_html}</div>\n</section>\n"""
+<section class=\"hero\" id=\"about\">\n  <div class=\"panel profile-card\">\n    <div class=\"avatar\">\n      <img src=\"{profile['avatar']}\" alt=\"Portrait of {profile['name']}\" loading=\"lazy\" />\n    </div>\n    <div class=\"profile-text\">\n      <p class=\"eyebrow\">{profile.get('native_name','')}</p>\n      <h1>{profile['name']}</h1>\n      <p class=\"role\">{profile['role']} · {profile['organization']}</p>\n      <p class=\"muted\">{profile['location']}</p>\n      <p class=\"lede\">{profile['tagline']}</p>\n      <div class=\"chips\">\n        <span class=\"chip\">Email · {profile['email']}</span>\n        {social_html}\n      </div>\n      <div class=\"actions\">{actions_html}</div>\n    </div>\n  </div>\n  <div class=\"highlights\">{highlight_html}</div>\n</section>\n"""
 
 
 def render_timeline(timeline: List[Dict[str, Any]]) -> str:
@@ -171,35 +188,98 @@ def render_resources(resources: List[Dict[str, Any]]) -> str:
     return "".join(cards)
 
 
+def render_writings(key: str, block: Dict[str, Any]) -> str:
+    entries = block.get("entries", [])
+    cards: List[str] = []
+    for item in entries:
+        badges = "".join(f"<span class=\"badge\">{badge}</span>" for badge in item.get("badges", []))
+        actions = "".join(
+            f"<a class=\"btn btn-ghost\" href=\"{action['url']}\" target=\"_blank\" rel=\"noopener\">{action['label']}</a>"
+            for action in item.get("actions", [])
+        )
+        cards.append(
+            f"<article class=\"card writing-card\">"
+            f"<div class=\"card-meta\"><span class=\"pill\">{item.get('date','')}&nbsp;</span>{badges}</div>"
+            f"<h3>{item['title']}</h3>"
+            f"<p class=\"muted\">{item.get('summary','')}</p>"
+            f"<div class=\"links-row\"><a class=\"btn btn-outline\" href=\"{item['url']}\" target=\"_blank\" rel=\"noopener\">Read</a>{actions}</div>"
+            "</article>"
+        )
+
+    more_link = block.get("archive_link")
+    archive_html = (
+        f"<div class=\"section-foot\"><a class=\"text-link\" href=\"{more_link}\" target=\"_blank\" rel=\"noopener\">View more</a></div>"
+        if more_link
+        else ""
+    )
+
+    return (
+        f"<section id=\"{key}\" class=\"section\">"
+        f"<div class=\"section-header\"><p class=\"eyebrow\">{block.get('eyebrow','Writings')}</p><h2>{block.get('title','Writing')}</h2><p class=\"lede\">{block.get('description','')}</p></div>"
+        f"<div class=\"cards-grid writing-grid\">{''.join(cards)}</div>{archive_html}</section>"
+    )
+
+
+def render_archive_notice(archive: Dict[str, Any]) -> str:
+    return (
+        "<section id=\"archive\" class=\"section section-compact\">"
+        "<div class=\"panel inline-panel\">"
+        f"<div><p class=\"eyebrow\">Legacy</p><h3>{archive.get('label','Legacy archive')}</h3>"
+        f"<p class=\"muted\">{archive.get('summary','Legacy jemdoc content has been archived.')}</p></div>"
+        f"<a class=\"btn btn-outline\" href=\"{archive.get('url','#')}\" target=\"_blank\" rel=\"noopener\">Open archive</a>"
+        "</div></section>"
+    )
+
+
 def render_sections(data: Dict[str, Any]) -> str:
-    sections = []
-    sections.append(render_profile_section(data["profile"], data.get("highlights", [])))
-    sections.append(
-        f"<section id=\"news\" class=\"section\">"
-        f"<div class=\"section-header\"><p class=\"eyebrow\">Updates</p><h2>Latest News</h2></div>"
-        f"<div class=\"timeline\">{render_timeline(data.get('timeline', []))}</div></section>"
-    )
-    sections.append(
-        f"<section id=\"publications\" class=\"section\">"
-        f"<div class=\"section-header\"><p class=\"eyebrow\">Selected Works</p><h2>Publications</h2></div>"
-        f"<div class=\"cards-grid\">{render_publications(data.get('publications', []))}</div></section>"
-    )
-    sections.append(
-        f"<section id=\"projects\" class=\"section\">"
-        f"<div class=\"section-header\"><p class=\"eyebrow\">Research & Services</p><h2>Projects</h2></div>"
-        f"<div class=\"cards-grid project-grid\">{render_projects(data.get('projects', []))}</div></section>"
-    )
-    sections.append(
-        f"<section id=\"resources\" class=\"section\">"
-        f"<div class=\"section-header\"><p class=\"eyebrow\">Notes & Links</p><h2>Resources</h2></div>"
-        f"<div class=\"resource-grid\">{render_resources(data.get('resources', []))}</div></section>"
-    )
+    sections: List[str] = []
+    toggles = data.get("toggles", {})
+    sections.append(render_profile_section(data["profile"], data.get("highlights", []), toggles))
+
+    if is_enabled("news", toggles, True):
+        sections.append(
+            f"<section id=\"news\" class=\"section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Updates</p><h2>Latest News</h2></div>"
+            f"<div class=\"timeline\">{render_timeline(data.get('timeline', []))}</div></section>"
+        )
+
+    if is_enabled("publications", toggles, True):
+        sections.append(
+            f"<section id=\"publications\" class=\"section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Selected Works</p><h2>Publications</h2></div>"
+            f"<div class=\"cards-grid\">{render_publications(data.get('publications', []))}</div></section>"
+        )
+
+    if is_enabled("projects", toggles, True):
+        sections.append(
+            f"<section id=\"projects\" class=\"section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Research & Services</p><h2>Projects</h2></div>"
+            f"<div class=\"cards-grid project-grid\">{render_projects(data.get('projects', []))}</div></section>"
+        )
+
+    if is_enabled("resources", toggles, True):
+        sections.append(
+            f"<section id=\"resources\" class=\"section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Notes & Links</p><h2>Resources</h2></div>"
+            f"<div class=\"resource-grid\">{render_resources(data.get('resources', []))}</div></section>"
+        )
+
+    writings = data.get("writings", {})
+    if is_enabled("blog", toggles) and writings.get("blog"):
+        sections.append(render_writings("blog", writings["blog"]))
+    if is_enabled("essays", toggles) and writings.get("essays"):
+        sections.append(render_writings("essays", writings["essays"]))
+
+    if is_enabled("legacy_archive", toggles) and data.get("archives", {}).get("legacy_jemdoc"):
+        sections.append(render_archive_notice(data["archives"]["legacy_jemdoc"]))
+
     return "".join(sections)
 
 
 def render_page(data: Dict[str, Any]) -> str:
     base_tpl = Template((TEMPLATE_DIR / "base.html").read_text(encoding="utf-8"))
-    nav_html = render_nav(data.get("navigation", []))
+    toggles = data.get("toggles", {})
+    nav_html = render_nav(data.get("navigation", []), toggles)
     footer_links = "".join(
         f"<a href=\"{link['url']}\" target=\"_blank\" rel=\"noopener\">{link['label']}</a>"
         for link in data.get("footer", {}).get("links", [])
@@ -211,6 +291,7 @@ def render_page(data: Dict[str, Any]) -> str:
         logo=data.get("profile", {}).get("name", ""),
         nav=nav_html,
         content=content_html,
+        theme=data.get("site", {}).get("theme", "dark"),
         footer_links=footer_links,
         footer_note=data.get("footer", {}).get("note", "")
     )
