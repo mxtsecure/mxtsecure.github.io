@@ -6,7 +6,7 @@
         "theme": "dark"
     },
     "assets": {
-        "placeholder_image": "assets/images/placeholder.svg",
+        "placeholder_image": "assets/images/mxt.jpg",
         "downloads": {
             "cv": "assets/downloads/cv.pdf"
         },
