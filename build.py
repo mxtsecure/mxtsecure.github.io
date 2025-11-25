@@ -1,0 +1,241 @@
+from __future__ import annotations
+import json
+import shutil
+from pathlib import Path
+from string import Template
+from typing import Any, Dict, List
+import sys
+
+BASE_DIR = Path(__file__).parent
+DATA_PATH = BASE_DIR / "data" / "site.json"
+TEMPLATE_DIR = BASE_DIR / "templates"
+OUTPUT_DIR = BASE_DIR / "docs"
+STATIC_DIR = BASE_DIR / "static" / "assets"
+STATIC_ROOT = BASE_DIR / "static"
+PHOTOS_DIR = BASE_DIR / "photos"
+
+PLACEHOLDER_IMAGE = "assets/images/placeholder.svg"
+PLACEHOLDER_LINK = "#"
+
+
+def asset_exists(relative_path: str) -> bool:
+    """Check whether an asset exists in any of the expected source locations."""
+    rel = Path(relative_path)
+    return any(
+        candidate.exists()
+        for candidate in [
+            BASE_DIR / rel,
+            STATIC_ROOT / rel,
+            PHOTOS_DIR / rel.name if rel.parts[:2] == ("assets", "photos") else PHOTOS_DIR / rel,
+        ]
+    )
+
+
+def load_data() -> Dict[str, Any]:
+    if not DATA_PATH.exists():
+        raise FileNotFoundError(f"Missing data file: {DATA_PATH}")
+    with DATA_PATH.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def ensure_links_and_images(data: Dict[str, Any]) -> Dict[str, Any]:
+    for item in data.get("timeline", []):
+        if not item.get("link"):
+            item["link"] = PLACEHOLDER_LINK
+
+    for pub in data.get("publications", []):
+        pub_links = pub.get("links") or {}
+        if not pub_links:
+            print(f"[warn] Publication '{pub.get('title')}' missing links, applying placeholder.")
+        pub["links"] = {label: url or PLACEHOLDER_LINK for label, url in pub_links.items()} or {"link": PLACEHOLDER_LINK}
+
+    for project in data.get("projects", []):
+        image_path = project.get("image")
+        if not image_path:
+            print(f"[warn] Project '{project.get('name')}' missing image, applying placeholder.")
+            project["image"] = PLACEHOLDER_IMAGE
+        else:
+            if not asset_exists(image_path):
+                print(f"[warn] Project '{project.get('name')}' image not found at {image_path}, applying placeholder.")
+                project["image"] = PLACEHOLDER_IMAGE
+
+    profile = data.get("profile", {})
+    avatar_path = profile.get("avatar")
+    if not avatar_path:
+        print("[warn] Profile avatar missing, applying placeholder.")
+        profile["avatar"] = PLACEHOLDER_IMAGE
+    else:
+        if not asset_exists(avatar_path):
+            print(f"[warn] Profile avatar not found at {avatar_path}, applying placeholder.")
+            profile["avatar"] = PLACEHOLDER_IMAGE
+
+    return data
+
+
+def prepare_output_dir() -> None:
+    if OUTPUT_DIR.exists():
+        shutil.rmtree(OUTPUT_DIR)
+    OUTPUT_DIR.mkdir(parents=True)
+
+
+def copy_assets() -> None:
+    assets_out = OUTPUT_DIR / "assets"
+    shutil.copytree(STATIC_DIR, assets_out)
+
+    photos_out = assets_out / "photos"
+    if PHOTOS_DIR.exists():
+        shutil.copytree(PHOTOS_DIR, photos_out)
+    else:
+        photos_out.mkdir(parents=True, exist_ok=True)
+
+
+def render_nav(navigation: List[Dict[str, Any]]) -> str:
+    links = []
+    for item in navigation:
+        links.append(f"<a href=\"{item['target']}\">{item['label']}</a>")
+    return "".join(links)
+
+
+def render_highlights(highlights: List[Dict[str, Any]]) -> str:
+    cards = []
+    for item in highlights:
+        cards.append(
+            f"<div class=\"highlight-card\"><h3>{item['title']}</h3><p>{item['description']}</p></div>"
+        )
+    return "".join(cards)
+
+
+def render_profile_section(profile: Dict[str, Any], highlights: List[Dict[str, Any]]) -> str:
+    highlight_html = render_highlights(highlights)
+    social_html = "".join(
+        f"<a class=\"chip\" href=\"{social['url']}\" target=\"_blank\" rel=\"noopener\">{social['label']}</a>"
+        for social in profile.get("socials", [])
+    )
+    return f"""
+<section class=\"hero\" id=\"about\">\n  <div class=\"profile-card\">\n    <div class=\"avatar\">\n      <img src=\"{profile['avatar']}\" alt=\"Portrait of {profile['name']}\" loading=\"lazy\" />\n    </div>\n    <div class=\"profile-text\">\n      <p class=\"eyebrow\">{profile.get('native_name','')}</p>\n      <h1>{profile['name']}</h1>\n      <p class=\"role\">{profile['role']} · {profile['organization']}</p>\n      <p class=\"muted\">{profile['location']}</p>\n      <p class=\"lede\">{profile['tagline']}</p>\n      <div class=\"chips\">\n        <span class=\"chip\">Email · {profile['email']}</span>\n        {social_html}\n      </div>\n    </div>\n  </div>\n  <div class=\"highlights\">{highlight_html}</div>\n</section>\n"""
+
+
+def render_timeline(timeline: List[Dict[str, Any]]) -> str:
+    cards = []
+    for item in timeline:
+        cards.append(
+            f"<article class=\"timeline-card\">"
+            f"<div class=\"timeline-date\">{item['date']}</div>"
+            f"<div class=\"timeline-content\"><h3>{item['title']}</h3><p>{item['description']}</p>"
+            f"<a href=\"{item['link']}\" class=\"text-link\">Read more</a></div>"
+            "</article>"
+        )
+    return "".join(cards)
+
+
+def render_publications(publications: List[Dict[str, Any]]) -> str:
+    cards = []
+    for paper in publications:
+        tags = "".join(f"<span class=\"chip chip-small\">{tag}</span>" for tag in paper.get("highlights", []))
+        links = "".join(f"<a href=\"{url}\" class=\"text-link\">{label.capitalize()}</a>" for label, url in paper.get("links", {}).items())
+        cards.append(
+            f"<article class=\"card\">"
+            f"<div class=\"card-meta\"><span class=\"pill\">{paper['venue']}</span><span class=\"pill pill-muted\">{paper['year']}</span></div>"
+            f"<h3>{paper['title']}</h3>"
+            f"<p class=\"muted\">{paper['authors']}</p>"
+            f"<div class=\"chip-row\">{tags}</div>"
+            f"<div class=\"links-row\">{links}</div>"
+            "</article>"
+        )
+    return "".join(cards)
+
+
+def render_projects(projects: List[Dict[str, Any]]) -> str:
+    cards = []
+    for project in projects:
+        tags = "".join(f"<span class=\"chip chip-small\">{tag}</span>" for tag in project.get("tags", []))
+        cards.append(
+            f"<article class=\"card project-card\">"
+            f"<div class=\"project-media\"><img src=\"{project['image']}\" alt=\"{project['name']}\" loading=\"lazy\" /></div>"
+            f"<div class=\"project-body\"><h3>{project['name']}</h3><p>{project['summary']}</p><div class=\"chip-row\">{tags}</div></div>"
+            "</article>"
+        )
+    return "".join(cards)
+
+
+def render_resources(resources: List[Dict[str, Any]]) -> str:
+    cards = []
+    for group in resources:
+        item_rows = []
+        for item in group.get("items", []):
+            note = f" <span class=\"muted\">— {item['note']}</span>" if item.get("note") else ""
+            item_rows.append(
+                f"<li><a href=\"{item['url']}\" target=\"_blank\" rel=\"noopener\">{item['title']}</a>{note}</li>"
+            )
+        cards.append(f"<div class=\"resource-card\"><h3>{group['category']}</h3><ul>{''.join(item_rows)}</ul></div>")
+    return "".join(cards)
+
+
+def render_sections(data: Dict[str, Any]) -> str:
+    sections = []
+    sections.append(render_profile_section(data["profile"], data.get("highlights", [])))
+    sections.append(
+        f"<section id=\"news\" class=\"section\">"
+        f"<div class=\"section-header\"><p class=\"eyebrow\">Updates</p><h2>Latest News</h2></div>"
+        f"<div class=\"timeline\">{render_timeline(data.get('timeline', []))}</div></section>"
+    )
+    sections.append(
+        f"<section id=\"publications\" class=\"section\">"
+        f"<div class=\"section-header\"><p class=\"eyebrow\">Selected Works</p><h2>Publications</h2></div>"
+        f"<div class=\"cards-grid\">{render_publications(data.get('publications', []))}</div></section>"
+    )
+    sections.append(
+        f"<section id=\"projects\" class=\"section\">"
+        f"<div class=\"section-header\"><p class=\"eyebrow\">Research & Services</p><h2>Projects</h2></div>"
+        f"<div class=\"cards-grid project-grid\">{render_projects(data.get('projects', []))}</div></section>"
+    )
+    sections.append(
+        f"<section id=\"resources\" class=\"section\">"
+        f"<div class=\"section-header\"><p class=\"eyebrow\">Notes & Links</p><h2>Resources</h2></div>"
+        f"<div class=\"resource-grid\">{render_resources(data.get('resources', []))}</div></section>"
+    )
+    return "".join(sections)
+
+
+def render_page(data: Dict[str, Any]) -> str:
+    base_tpl = Template((TEMPLATE_DIR / "base.html").read_text(encoding="utf-8"))
+    nav_html = render_nav(data.get("navigation", []))
+    footer_links = "".join(
+        f"<a href=\"{link['url']}\" target=\"_blank\" rel=\"noopener\">{link['label']}</a>"
+        for link in data.get("footer", {}).get("links", [])
+    )
+    content_html = render_sections(data)
+    return base_tpl.substitute(
+        title=data.get("site", {}).get("title", "Research Homepage"),
+        description=data.get("site", {}).get("description", ""),
+        logo=data.get("profile", {}).get("name", ""),
+        nav=nav_html,
+        content=content_html,
+        footer_links=footer_links,
+        footer_note=data.get("footer", {}).get("note", "")
+    )
+
+
+def write_output(html: str) -> None:
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    (OUTPUT_DIR / "index.html").write_text(html, encoding="utf-8")
+
+
+def main() -> int:
+    try:
+        data = load_data()
+    except FileNotFoundError as exc:
+        print(exc)
+        return 1
+
+    data = ensure_links_and_images(data)
+    prepare_output_dir()
+    copy_assets()
+    html = render_page(data)
+    write_output(html)
+    print(f"Site generated at {OUTPUT_DIR.resolve()}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
