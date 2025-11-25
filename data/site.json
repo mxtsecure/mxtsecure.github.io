@@ -1,0 +1,144 @@
+{
+  "site": {
+    "title": "Xiangtao Meng | Trustworthy ML",
+    "description": "Researcher in trustworthy machine learning, focusing on deepfake forensics and LLM safety.",
+    "base_url": "/"
+  },
+    "profile": {
+      "name": "Xiangtao Meng",
+      "native_name": "孟祥涛",
+      "role": "2nd-year Ph.D., School of Cyber Science and Technology",
+      "organization": "Shandong University",
+      "location": "Qingdao, China",
+      "avatar": "assets/images/placeholder.svg",
+      "email": "mengxiangtao@mail.sdu.edu.cn",
+      "tagline": "Exploring secure and trustworthy AI, from deepfake detection to robust large language models.",
+    "socials": [
+      {"label": "GitHub", "url": "https://github.com/AnonymousUserA"},
+      {"label": "Google Scholar", "url": "https://scholar.google.com/citations?hl=zh-CN&user=W_GK6gcAAAAJ"},
+      {"label": "ISecLab", "url": "https://sduiseclab.github.io/"}
+    ]
+  },
+  "navigation": [
+    {"label": "About", "target": "#about"},
+    {"label": "News", "target": "#news"},
+    {"label": "Publications", "target": "#publications"},
+    {"label": "Projects", "target": "#projects"},
+    {"label": "Resources", "target": "#resources"}
+  ],
+  "highlights": [
+    {"title": "Trustworthy Machine Learning", "description": "Researching safety, robustness, and privacy across generative models and LLM agents."},
+    {"title": "Deepfake Forensics", "description": "Building attacks and defenses for facial forgery detection in practical pipelines."},
+    {"title": "Secure LLM Systems", "description": "Designing evaluation frameworks that expose risk interactions and support safer deployments."}
+  ],
+  "timeline": [
+    {"date": "2025-11-03", "title": "Featured by MIT Technology Review China", "description": "Media coverage of our latest LLM defense study.", "link": "https://wap.mittrchina.com/news/detail/15426"},
+    {"date": "2025-10-10", "title": "Preprint: From Defender to Devil?", "description": "Investigating unintended risk interactions introduced by LLM defenses.", "link": "https://arxiv.org/abs/2510.07968"},
+    {"date": "2025-09-18", "title": "ErrorTrace accepted at NeurIPS 2025 (spotlight)", "description": "Black-box traceability based on model family error space.", "link": "https://arxiv.org/abs/2509.06026"},
+    {"date": "2025-09-06", "title": "Industry collaboration launched", "description": "Joint research project on LLM security testing and risk assessment with Topsec."},
+    {"date": "2025-08-28", "title": "Preprint: Safe-Control", "description": "Safety patch for mitigating unsafe content in text-to-image generation models.", "link": "https://arxiv.org/abs/2508.21099"},
+    {"date": "2025-08-13", "title": "DCMI accepted at CCS 2025", "description": "Differential calibration membership inference against RAG.", "link": "https://arxiv.org/abs/2509.06026"},
+    {"date": "2025-03-11", "title": "Fuzz-testing meets LLM-based agents accepted at IEEE S&P 2025", "description": "Automated framework for jailbreaking text-to-image generation models.", "link": "https://arxiv.org/abs/2408.00523"},
+    {"date": "2024-11-15", "title": "Outstanding master's thesis", "description": "Recognized for thesis on robustness research for deepfake detection."}
+  ],
+  "publications": [
+    {
+      "title": "From Defender to Devil? Unintended Risk Interactions Induced by LLM Defenses",
+      "authors": "Xiangtao Meng, Tianshuo Cong, Li Wang, Wenyu Chen, Zheng Li✉, Shanqing Guo✉, Xiaoyun Wang✉",
+      "venue": "arXiv",
+      "year": 2025,
+      "highlights": ["LLM Safety", "Risk Analysis"],
+      "links": {"paper": "https://arxiv.org/abs/2510.07968"}
+    },
+    {
+      "title": "ErrorTrace: A Black-Box Traceability Mechanism Based on Model Family Error Space",
+      "authors": "Chuanchao Zang, Xiangtao Meng, Wenyu Chen, Tianshuo Cong, Zha Yaxing, Dong Qi, Zheng Li, Shanqing Guo",
+      "venue": "NeurIPS (Spotlight)",
+      "year": 2025,
+      "highlights": ["Model Provenance", "NeurIPS 2025"],
+      "links": {}
+    },
+    {
+      "title": "Safe-Control: A Safety Patch for Mitigating Unsafe Content in Text-to-Image Generation Models",
+      "authors": "Xiangtao Meng, Yingkai Dong, Ning Yu, Li Wang, Zheng Li✉, Shanqing Guo✉",
+      "venue": "arXiv",
+      "year": 2025,
+      "highlights": ["T2I Safety", "Defense"],
+      "links": {"paper": "https://arxiv.org/abs/2508.21099"}
+    },
+    {
+      "title": "DCMI: A Differential Calibration Membership Inference Attack Against Retrieval-Augmented Generation",
+      "authors": "Xinyu, Xiangtao Meng✉, Yingkai Dong, Zheng Li✉, Shanqing Guo✉",
+      "venue": "CCS",
+      "year": 2025,
+      "highlights": ["RAG Security", "CCS 2025"],
+      "links": {"paper": "https://arxiv.org/abs/2509.06026"}
+    },
+    {
+      "title": "Fuzz-testing meets LLM-based agents: An automated and efficient framework for jailbreaking text-to-image generation models",
+      "authors": "Yingkai Dong, Xiangtao Meng, Ning Yu, Li Wang, Zheng Li✉, Shanqing Guo✉",
+      "venue": "IEEE S&P",
+      "year": 2025,
+      "highlights": ["Adversarial Testing", "IEEE S&P"],
+      "links": {"paper": "https://arxiv.org/abs/2408.00523"}
+    },
+    {
+      "title": "AVA: Inconspicuous Attribute Variation-based Adversarial Attack bypassing DeepFake Detection",
+      "authors": "Xiangtao Meng, Li Wang, Shanqing Guo✉, Lei Ju, Qingchuan Zhao",
+      "venue": "IEEE S&P",
+      "year": 2024,
+      "highlights": ["Deepfake Attack", "Code Released"],
+      "links": {"paper": "https://arxiv.org/abs/2312.08675", "code": "https://github.com/AnonymousUserA/AVA"}
+    },
+    {
+      "title": "DEEPFAKER: A Unified Evaluation Platform for Facial Deepfake and Detection Models",
+      "authors": "Li Wang, Xiangtao Meng, Dan Li, Xuhong Zhang, Shouling Ji, Shanqing Guo✉",
+      "venue": "ACM TOPS",
+      "year": 2024,
+      "highlights": ["Benchmark", "CCF B"],
+      "links": {"paper": "https://dl.acm.org/doi/abs/10.1145/3634914"}
+    }
+  ],
+  "projects": [
+    {"name": "LLM Security Testing Framework", "summary": "Joint research with Topsec to design systematic testing and risk assessment for large language models.", "tags": ["LLM Security", "Industry Collaboration"], "image": "assets/images/placeholder.svg"},
+    {"name": "Safe-Control", "summary": "Safety patch for grounding text-to-image generation within controllable boundaries.", "tags": ["Defense", "Generative AI"], "image": "assets/images/placeholder.svg"},
+    {"name": "ErrorTrace", "summary": "Tracing model lineage through error space signatures in black-box settings.", "tags": ["Traceability", "NeurIPS 2025"], "image": "assets/images/placeholder.svg"},
+    {"name": "DCMI", "summary": "Membership inference against retrieval-augmented generation via differential calibration.", "tags": ["Privacy", "CCS 2025"], "image": "assets/images/placeholder.svg"},
+    {"name": "DEEPFAKER", "summary": "Unified evaluation platform covering facial deepfake generation and detection models.", "tags": ["Benchmark", "TOPS"], "image": "assets/images/placeholder.svg"}
+  ],
+  "resources": [
+    {
+      "category": "Tutorials",
+      "items": [
+        {"title": "Ubuntu 利用Github配置个人主页(jemdoc)", "url": "https://www.notion.so/Ubuntu-Github-dc04221847994d65834290470e394777", "note": "环境配置记录"},
+        {"title": "Anaconda 的使用教程", "url": "https://www.notion.so/Anaconda-21b9d59fb67146bba32feeedaadce461"},
+        {"title": "安全顶会查询教程", "url": "https://www.notion.so/cc157d48f8fb4073a7432657bdb6e9d7"},
+        {"title": "Windows 上传文件到远程服务器", "url": "https://www.notion.so/add0ff2720624f5e96cee6dce0820594"}
+      ]
+    },
+    {
+      "category": "Research Notes",
+      "items": [
+        {"title": "Kaldi 安装及 ASpIRE 模型的使用", "url": "https://www.notion.so/Kaldi-ASpIRE-34aa438f43a6449b8501df72aa14c49f"},
+        {"title": "语音对抗中值得收藏的文章", "url": "https://www.notion.so/534a7912d8fe43498e4131ed204dc103"},
+        {"title": "智能合约攻击方式总结", "url": "https://www.notion.so/51e6c16fbaae4b5ea035b680f8e75632"},
+        {"title": "物联网安全态势感知系统的研究与实现", "url": "https://www.notion.so/476fc444867c4cc4a6debd2c1d9a42ee"},
+        {"title": "基于种子地址的IPv6地址探测技术", "url": "https://www.notion.so/IPv6-92c43a0fd43b4a21b99997231c159b57"},
+        {"title": "Intriguing properties of neural networks (L-BFGS 开山之作)", "url": "https://www.notion.so/Intriguing-properties-of-neural-networks-L-BFGS-7a65e750d8c14f698a995d41ce95cacf"},
+        {"title": "CommanderSong 语音对抗经典之作", "url": "https://www.notion.so/CommanderSong-6a8ae90ba1694dcabaccf149fc4b580c"},
+        {"title": "Devil's Whisper 物理语音攻击", "url": "https://www.notion.so/Devil-s-Whisper-A-General-Approach-for-Physical-Adversarial-Attacks-against-Commercial-Black-box-Spe-e598291f176f43e5882cdf2c28733692"},
+        {"title": "语音攻击类论文汇总整理", "url": "https://www.notion.so/4bbdf4d59eeb4b61a656178a0f1a59b8"},
+        {"title": "TXSPECTOR: Uncovering Attacks in Ethereum from Transactions", "url": "https://www.notion.so/TxSpector-USENIX-Security-69703e1f1a7841118443232af966fd08"},
+        {"title": "VULTRON: Catching Vulnerable Smart Contracts", "url": "https://www.notion.so/VULTRON-62707143bab54c7da88bffbfef5cfd1e"}
+      ]
+    }
+  ],
+  "footer": {
+    "links": [
+      {"label": "GitHub", "url": "https://github.com/AnonymousUserA"},
+      {"label": "Google Scholar", "url": "https://scholar.google.com/citations?hl=zh-CN&user=W_GK6gcAAAAJ"},
+      {"label": "ISecLab", "url": "https://sduiseclab.github.io/"}
+    ],
+    "note": "Last updated with a lightweight static build pipeline."
+  }
+}
