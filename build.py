@@ -96,14 +96,15 @@ def is_enabled(toggle_key: str | None, toggles: Dict[str, Any], fallback: bool =
     return bool(toggles.get(toggle_key, fallback))
 
 
-def render_nav(navigation: List[Dict[str, Any]], toggles: Dict[str, Any]) -> str:
+def render_nav(navigation: List[Dict[str, Any]], toggles: Dict[str, Any], inline: bool = False) -> str:
     links = []
     for item in navigation:
         if not is_enabled(item.get("toggle"), toggles, item.get("enabled", True)):
             continue
         target = item.get("target", "#")
         extra_attrs = " target=\"_blank\" rel=\"noopener\"" if item.get("external") else ""
-        links.append(f"<a class=\"nav-link\" href=\"{target}\"{extra_attrs}>{item['label']}</a>")
+        cls = "nav-anchor" if inline else "nav-link"
+        links.append(f"<a class=\"{cls}\" href=\"{target}\"{extra_attrs}>{item['label']}</a>")
     return "".join(links)
 
 
@@ -116,76 +117,80 @@ def render_highlights(highlights: List[Dict[str, Any]]) -> str:
     return "".join(cards)
 
 
-def render_profile_section(profile: Dict[str, Any], highlights: List[Dict[str, Any]], toggles: Dict[str, Any]) -> str:
-    highlight_html = render_highlights(highlights)
+def render_profile_sidebar(
+    profile: Dict[str, Any], navigation: List[Dict[str, Any]], highlights: List[Dict[str, Any]], toggles: Dict[str, Any]
+) -> str:
     social_html = "".join(
-        f"<a class=\"chip\" href=\"{social['url']}\" target=\"_blank\" rel=\"noopener\">{social['label']}</a>"
+        f"<a class=\"inline-link\" href=\"{social['url']}\" target=\"_blank\" rel=\"noopener\">{social['label']}</a>"
         for social in profile.get("socials", [])
     )
     actions_html = "".join(
-        f"<a class=\"btn {action.get('variant', 'btn-ghost')}\" href=\"{action['url']}\""
-        f" target=\"_blank\" rel=\"noopener\">{action['label']}</a>"
+        f"<a class=\"inline-button\" href=\"{action['url']}\" target=\"_blank\" rel=\"noopener\">{action['label']}</a>"
         for action in profile.get("actions", [])
         if is_enabled(action.get("toggle"), toggles, action.get("enabled", True))
     )
+    focus_html = "".join(f"<li>{item['title']} — {item['description']}</li>" for item in highlights)
+    nav_html = render_nav(navigation, toggles, inline=True)
     return f"""
-<section class=\"hero\" id=\"about\">\n  <div class=\"panel profile-card\">\n    <div class=\"avatar\">\n      <img src=\"{profile['avatar']}\" alt=\"Portrait of {profile['name']}\" loading=\"lazy\" />\n    </div>\n    <div class=\"profile-text\">\n      <p class=\"eyebrow\">{profile.get('native_name','')}</p>\n      <h1>{profile['name']}</h1>\n      <p class=\"role\">{profile['role']} · {profile['organization']}</p>\n      <p class=\"muted\">{profile['location']}</p>\n      <p class=\"lede\">{profile['tagline']}</p>\n      <div class=\"chips\">\n        <span class=\"chip\">Email · {profile['email']}</span>\n        {social_html}\n      </div>\n      <div class=\"actions\">{actions_html}</div>\n    </div>\n  </div>\n  <div class=\"highlights\">{highlight_html}</div>\n</section>\n"""
+<aside class=\"sidebar\" id=\"about\">\n  <div class=\"avatar\"><img src=\"{profile['avatar']}\" alt=\"Portrait of {profile['name']}\" loading=\"lazy\"></div>\n  <p class=\"eyebrow\">{profile.get('native_name','')}</p>\n  <h1>{profile['name']}</h1>\n  <p class=\"role\">{profile['role']}<br>{profile['organization']}</p>\n  <p class=\"muted\">{profile['location']}</p>\n  <p class=\"lede\">{profile['tagline']}\n  </p>\n  <div class=\"contact-row\">\n    <a class=\"inline-link\" href=\"mailto:{profile['email']}\">{profile['email']}</a>\n    {social_html}\n  </div>\n  <div class=\"nav-column\">{nav_html}</div>\n  <div class=\"focus\">\n    <p class=\"eyebrow\">Focus</p>\n    <ul>{focus_html}</ul>\n  </div>\n  <div class=\"actions\">{actions_html}</div>\n</aside>\n"""
 
 
 def render_timeline(timeline: List[Dict[str, Any]]) -> str:
-    cards = []
+    rows = []
     for item in timeline:
-        cards.append(
-            f"<article class=\"timeline-card\">"
-            f"<div class=\"timeline-date\">{item['date']}</div>"
-            f"<div class=\"timeline-content\"><h3>{item['title']}</h3><p>{item['description']}</p>"
-            f"<a href=\"{item['link']}\" class=\"text-link\">Read more</a></div>"
-            "</article>"
+        rows.append(
+            """
+<div class=\"list-row\">\n  <div class=\"list-label\">{date}</div>\n  <div class=\"list-body\">\n    <div class=\"item-title\">{title}</div>\n    <p class=\"muted\">{desc}</p>\n    <a href=\"{link}\" class=\"inline-link\" target=\"_blank\" rel=\"noopener\">Read more</a>\n  </div>\n</div>\n""".format(date=item["date"], title=item["title"], desc=item["description"], link=item["link"])
         )
-    return "".join(cards)
+    return "".join(rows)
 
 
 def render_publications(publications: List[Dict[str, Any]]) -> str:
-    cards = []
+    rows = []
     for paper in publications:
-        tags = "".join(f"<span class=\"chip chip-small\">{tag}</span>" for tag in paper.get("highlights", []))
-        links = "".join(f"<a href=\"{url}\" class=\"text-link\">{label.capitalize()}</a>" for label, url in paper.get("links", {}).items())
-        cards.append(
-            f"<article class=\"card\">"
-            f"<div class=\"card-meta\"><span class=\"pill\">{paper['venue']}</span><span class=\"pill pill-muted\">{paper['year']}</span></div>"
-            f"<h3>{paper['title']}</h3>"
-            f"<p class=\"muted\">{paper['authors']}</p>"
-            f"<div class=\"chip-row\">{tags}</div>"
-            f"<div class=\"links-row\">{links}</div>"
-            "</article>"
+        tags = " ".join(f"<span class=\"tag\">{tag}</span>" for tag in paper.get("highlights", []))
+        links = " ".join(
+            f"<a href=\"{url}\" class=\"inline-link\" target=\"_blank\" rel=\"noopener\">{label.capitalize()}</a>"
+            for label, url in paper.get("links", {}).items()
         )
-    return "".join(cards)
+        rows.append(
+            """
+<div class=\"list-row\">\n  <div class=\"list-label\">{year}</div>\n  <div class=\"list-body\">\n    <div class=\"item-title\">{title}</div>\n    <div class=\"muted\">{authors}</div>\n    <div class=\"meta\">{venue} · {tags}</div>\n    <div class=\"links-row\">{links}</div>\n  </div>\n</div>\n""".format(
+                year=paper["year"],
+                title=paper["title"],
+                authors=paper["authors"],
+                venue=paper["venue"],
+                tags=tags,
+                links=links,
+            )
+        )
+    return "".join(rows)
 
 
 def render_projects(projects: List[Dict[str, Any]]) -> str:
-    cards = []
+    rows = []
     for project in projects:
-        tags = "".join(f"<span class=\"chip chip-small\">{tag}</span>" for tag in project.get("tags", []))
-        cards.append(
-            f"<article class=\"card project-card\">"
-            f"<div class=\"project-media\"><img src=\"{project['image']}\" alt=\"{project['name']}\" loading=\"lazy\" /></div>"
-            f"<div class=\"project-body\"><h3>{project['name']}</h3><p>{project['summary']}</p><div class=\"chip-row\">{tags}</div></div>"
-            "</article>"
+        tags = " ".join(f"<span class=\"tag\">{tag}</span>" for tag in project.get("tags", []))
+        rows.append(
+            """
+<div class=\"list-row project-row\">\n  <div class=\"thumb\"><img src=\"{img}\" alt=\"{name}\" loading=\"lazy\"></div>\n  <div class=\"list-body\">\n    <div class=\"item-title\">{name}</div>\n    <p class=\"muted\">{summary}</p>\n    <div class=\"meta\">{tags}</div>\n  </div>\n</div>\n""".format(
+                img=project["image"], name=project["name"], summary=project["summary"], tags=tags
+            )
         )
-    return "".join(cards)
+    return "".join(rows)
 
 
 def render_resources(resources: List[Dict[str, Any]]) -> str:
-    cards = []
+    blocks = []
     for group in resources:
         item_rows = []
         for item in group.get("items", []):
             note = f" <span class=\"muted\">— {item['note']}</span>" if item.get("note") else ""
             item_rows.append(
-                f"<li><a href=\"{item['url']}\" target=\"_blank\" rel=\"noopener\">{item['title']}</a>{note}</li>"
+                f"<li><a class=\"inline-link\" href=\"{item['url']}\" target=\"_blank\" rel=\"noopener\">{item['title']}</a>{note}</li>"
             )
-        cards.append(f"<div class=\"resource-card\"><h3>{group['category']}</h3><ul>{''.join(item_rows)}</ul></div>")
-    return "".join(cards)
+        blocks.append(f"<div class=\"resource-block\"><div class=\"item-title\">{group['category']}</div><ul>{''.join(item_rows)}</ul></div>")
+    return "".join(blocks)
 
 
 def render_writings(key: str, block: Dict[str, Any]) -> str:
@@ -215,7 +220,7 @@ def render_writings(key: str, block: Dict[str, Any]) -> str:
 
     return (
         f"<section id=\"{key}\" class=\"section\">"
-        f"<div class=\"section-header\"><p class=\"eyebrow\">{block.get('eyebrow','Writings')}</p><h2>{block.get('title','Writing')}</h2><p class=\"lede\">{block.get('description','')}</p></div>"
+        f"<div class=\"section-header\"><p class=\"eyebrow\">{block.get('eyebrow','Writings')}</p><h2>{block.get('title','Writings')}</h2><p class=\"lede\">{block.get('description','')}</p></div>"
         f"<div class=\"cards-grid writing-grid\">{''.join(cards)}</div>{archive_html}</section>"
     )
 
@@ -234,34 +239,33 @@ def render_archive_notice(archive: Dict[str, Any]) -> str:
 def render_sections(data: Dict[str, Any]) -> str:
     sections: List[str] = []
     toggles = data.get("toggles", {})
-    sections.append(render_profile_section(data["profile"], data.get("highlights", []), toggles))
 
     if is_enabled("news", toggles, True):
         sections.append(
             f"<section id=\"news\" class=\"section\">"
             f"<div class=\"section-header\"><p class=\"eyebrow\">Updates</p><h2>Latest News</h2></div>"
-            f"<div class=\"timeline\">{render_timeline(data.get('timeline', []))}</div></section>"
+            f"<div class=\"list-stack\">{render_timeline(data.get('timeline', []))}</div></section>"
         )
 
     if is_enabled("publications", toggles, True):
         sections.append(
             f"<section id=\"publications\" class=\"section\">"
             f"<div class=\"section-header\"><p class=\"eyebrow\">Selected Works</p><h2>Publications</h2></div>"
-            f"<div class=\"cards-grid\">{render_publications(data.get('publications', []))}</div></section>"
+            f"<div class=\"list-stack\">{render_publications(data.get('publications', []))}</div></section>"
         )
 
     if is_enabled("projects", toggles, True):
         sections.append(
             f"<section id=\"projects\" class=\"section\">"
             f"<div class=\"section-header\"><p class=\"eyebrow\">Research & Services</p><h2>Projects</h2></div>"
-            f"<div class=\"cards-grid project-grid\">{render_projects(data.get('projects', []))}</div></section>"
+            f"<div class=\"list-stack\">{render_projects(data.get('projects', []))}</div></section>"
         )
 
     if is_enabled("resources", toggles, True):
         sections.append(
             f"<section id=\"resources\" class=\"section\">"
             f"<div class=\"section-header\"><p class=\"eyebrow\">Notes & Links</p><h2>Resources</h2></div>"
-            f"<div class=\"resource-grid\">{render_resources(data.get('resources', []))}</div></section>"
+            f"<div class=\"resource-list\">{render_resources(data.get('resources', []))}</div></section>"
         )
 
     writings = data.get("writings", {})
@@ -279,12 +283,13 @@ def render_sections(data: Dict[str, Any]) -> str:
 def render_page(data: Dict[str, Any]) -> str:
     base_tpl = Template((TEMPLATE_DIR / "base.html").read_text(encoding="utf-8"))
     toggles = data.get("toggles", {})
-    nav_html = render_nav(data.get("navigation", []), toggles)
+    nav_html = render_nav(data.get("navigation", []), toggles, inline=False)
     footer_links = "".join(
         f"<a href=\"{link['url']}\" target=\"_blank\" rel=\"noopener\">{link['label']}</a>"
         for link in data.get("footer", {}).get("links", [])
     )
-    content_html = render_sections(data)
+    sidebar_html = render_profile_sidebar(data["profile"], data.get("navigation", []), data.get("highlights", []), toggles)
+    content_html = f"<div class=\"layout\">{sidebar_html}<div class=\"content\">{render_sections(data)}</div></div>"
     return base_tpl.substitute(
         title=data.get("site", {}).get("title", "Research Homepage"),
         description=data.get("site", {}).get("description", ""),
