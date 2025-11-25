@@ -96,14 +96,20 @@ def is_enabled(toggle_key: str | None, toggles: Dict[str, Any], fallback: bool =
     return bool(toggles.get(toggle_key, fallback))
 
 
-def render_nav(navigation: List[Dict[str, Any]], toggles: Dict[str, Any], inline: bool = False) -> str:
+def render_nav(navigation: List[Dict[str, Any]], toggles: Dict[str, Any], variant: str = "nav") -> str:
+    class_map = {
+        "nav": "nav-link",
+        "inline": "nav-anchor",
+        "tabs": "tab-link",
+    }
+    cls = class_map.get(variant, "nav-link")
+
     links = []
     for item in navigation:
         if not is_enabled(item.get("toggle"), toggles, item.get("enabled", True)):
             continue
         target = item.get("target", "#")
         extra_attrs = " target=\"_blank\" rel=\"noopener\"" if item.get("external") else ""
-        cls = "nav-anchor" if inline else "nav-link"
         links.append(f"<a class=\"{cls}\" href=\"{target}\"{extra_attrs}>{item['label']}</a>")
     return "".join(links)
 
@@ -130,7 +136,7 @@ def render_profile_sidebar(
         if is_enabled(action.get("toggle"), toggles, action.get("enabled", True))
     )
     focus_html = "".join(f"<li>{item['title']} — {item['description']}</li>" for item in highlights)
-    nav_html = render_nav(navigation, toggles, inline=True)
+    nav_html = render_nav(navigation, toggles, variant="inline")
     return f"""
 <aside class=\"sidebar\" id=\"about\">\n  <div class=\"avatar\"><img src=\"{profile['avatar']}\" alt=\"Portrait of {profile['name']}\" loading=\"lazy\"></div>\n  <p class=\"eyebrow\">{profile.get('native_name','')}</p>\n  <h1>{profile['name']}</h1>\n  <p class=\"role\">{profile['role']}<br>{profile['organization']}</p>\n  <p class=\"muted\">{profile['location']}</p>\n  <p class=\"lede\">{profile['tagline']}\n  </p>\n  <div class=\"contact-row\">\n    <a class=\"inline-link\" href=\"mailto:{profile['email']}\">{profile['email']}</a>\n    {social_html}\n  </div>\n  <div class=\"nav-column\">{nav_html}</div>\n  <div class=\"focus\">\n    <p class=\"eyebrow\">Focus</p>\n    <ul>{focus_html}</ul>\n  </div>\n  <div class=\"actions\">{actions_html}</div>\n</aside>\n"""
 
@@ -165,6 +171,22 @@ def render_publications(publications: List[Dict[str, Any]]) -> str:
             )
         )
     return "".join(rows)
+
+
+def render_bio(profile: Dict[str, Any], highlights: List[Dict[str, Any]]) -> str:
+    focus_html = "".join(
+        f"<li><div class=\"item-title\">{item['title']}</div><p class=\"muted\">{item['description']}</p></li>"
+        for item in highlights
+    )
+
+    return """
+<section id=\"about\" class=\"section card-section\">\n  <div class=\"section-header\"><p class=\"eyebrow\">Bio</p><div class=\"section-title\"><h2>Profile</h2><span class=\"divider\"></span></div></div>\n  <div class=\"bio-grid\">\n    <div class=\"bio-summary\">\n      <p class=\"lede\">{tagline}</p>\n      <p class=\"muted\">Based in {location}. {role} at {organization}.</p>\n    </div>\n    <ul class=\"focus-list\">{focus}</ul>\n  </div>\n</section>\n""".format(
+        tagline=profile.get("tagline", ""),
+        location=profile.get("location", ""),
+        role=profile.get("role", ""),
+        organization=profile.get("organization", ""),
+        focus=focus_html,
+    )
 
 
 def render_projects(projects: List[Dict[str, Any]]) -> str:
@@ -240,31 +262,33 @@ def render_sections(data: Dict[str, Any]) -> str:
     sections: List[str] = []
     toggles = data.get("toggles", {})
 
+    sections.append(render_bio(data.get("profile", {}), data.get("highlights", [])))
+
     if is_enabled("news", toggles, True):
         sections.append(
-            f"<section id=\"news\" class=\"section\">"
-            f"<div class=\"section-header\"><p class=\"eyebrow\">Updates</p><h2>Latest News</h2></div>"
+            f"<section id=\"news\" class=\"section card-section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Updates</p><div class=\"section-title\"><h2>Latest News</h2><span class=\"divider\"></span></div></div>"
             f"<div class=\"list-stack\">{render_timeline(data.get('timeline', []))}</div></section>"
         )
 
     if is_enabled("publications", toggles, True):
         sections.append(
-            f"<section id=\"publications\" class=\"section\">"
-            f"<div class=\"section-header\"><p class=\"eyebrow\">Selected Works</p><h2>Publications</h2></div>"
+            f"<section id=\"publications\" class=\"section card-section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Selected Works</p><div class=\"section-title\"><h2>Publications</h2><span class=\"divider\"></span></div></div>"
             f"<div class=\"list-stack\">{render_publications(data.get('publications', []))}</div></section>"
         )
 
     if is_enabled("projects", toggles, True):
         sections.append(
-            f"<section id=\"projects\" class=\"section\">"
-            f"<div class=\"section-header\"><p class=\"eyebrow\">Research & Services</p><h2>Projects</h2></div>"
+            f"<section id=\"projects\" class=\"section card-section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Research & Services</p><div class=\"section-title\"><h2>Projects</h2><span class=\"divider\"></span></div></div>"
             f"<div class=\"list-stack\">{render_projects(data.get('projects', []))}</div></section>"
         )
 
     if is_enabled("resources", toggles, True):
         sections.append(
-            f"<section id=\"resources\" class=\"section\">"
-            f"<div class=\"section-header\"><p class=\"eyebrow\">Notes & Links</p><h2>Resources</h2></div>"
+            f"<section id=\"resources\" class=\"section card-section\">"
+            f"<div class=\"section-header\"><p class=\"eyebrow\">Notes & Links</p><div class=\"section-title\"><h2>Resources</h2><span class=\"divider\"></span></div></div>"
             f"<div class=\"resource-list\">{render_resources(data.get('resources', []))}</div></section>"
         )
 
@@ -283,18 +307,31 @@ def render_sections(data: Dict[str, Any]) -> str:
 def render_page(data: Dict[str, Any]) -> str:
     base_tpl = Template((TEMPLATE_DIR / "base.html").read_text(encoding="utf-8"))
     toggles = data.get("toggles", {})
-    nav_html = render_nav(data.get("navigation", []), toggles, inline=False)
     footer_links = "".join(
         f"<a href=\"{link['url']}\" target=\"_blank\" rel=\"noopener\">{link['label']}</a>"
         for link in data.get("footer", {}).get("links", [])
     )
-    sidebar_html = render_profile_sidebar(data["profile"], data.get("navigation", []), data.get("highlights", []), toggles)
-    content_html = f"<div class=\"layout\">{sidebar_html}<div class=\"content\">{render_sections(data)}</div></div>"
+
+    profile = data.get("profile", {})
+    social_html = "".join(
+        f"<a class=\"inline-link\" href=\"{social['url']}\" target=\"_blank\" rel=\"noopener\">{social['label']}</a>"
+        for social in profile.get("socials", [])
+    )
+    actions_html = "".join(
+        f"<a class=\"inline-button\" href=\"{action['url']}\" target=\"_blank\" rel=\"noopener\">{action['label']}</a>"
+        for action in profile.get("actions", [])
+        if is_enabled(action.get("toggle"), toggles, action.get("enabled", True))
+    )
+
+    hero_nav = render_nav(data.get("navigation", []), toggles, variant="tabs")
+    hero_html = f"""
+<header class=\"hero\">\n  <div class=\"hero-card\">\n    <div class=\"hero-meta\">\n      <div class=\"name-block\">\n        <p class=\"eyebrow\">{profile.get('native_name','')}</p>\n        <h1>{profile.get('name','')}</h1>\n      </div>\n      <div class=\"role-block\">\n        <p class=\"role\">{profile.get('role','')}</p>\n        <p class=\"muted\">{profile.get('organization','')}</p>\n        <p class=\"muted\">{profile.get('location','')}</p>\n      </div>\n    </div>\n    <p class=\"lede\">{profile.get('tagline','')}</p>\n    <div class=\"contact-row\">\n      <a class=\"inline-link\" href=\"mailto:{profile.get('email','')}\">{profile.get('email','')}</a>\n      {social_html}\n    </div>\n    <div class=\"actions\">{actions_html}</div>\n  </div>\n  <nav class=\"tab-nav\" aria-label=\"Primary\">{hero_nav}</nav>\n</header>\n"""
+
+    content_html = f"{hero_html}<div class=\"content\">{render_sections(data)}</div>"
     return base_tpl.substitute(
         title=data.get("site", {}).get("title", "Research Homepage"),
         description=data.get("site", {}).get("description", ""),
         logo=data.get("profile", {}).get("name", ""),
-        nav=nav_html,
         content=content_html,
         theme=data.get("site", {}).get("theme", "dark"),
         footer_links=footer_links,
